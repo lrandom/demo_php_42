@@ -1,3 +1,9 @@
+<?php
+if (isset($_REQUEST['email'])) {
+    $email = $_REQUEST['email'];
+    echo $email;
+}
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -8,25 +14,11 @@
     <title>Document</title>
 </head>
 <body>
-<?php
-$arr = array(1, 2, 3, 5, 4, 6);
-for ($i = 0; $i < count($arr); $i++) {
-    echo $arr[$i] . '</br>';
-}
-
-
-$arr2 = [2, 3, 4, 5, 6, 7];
-for ($i = 0; $i < count($arr2); $i++) {
-    echo $arr2[$i] . '</br>';
-}
-
-$arr3 = [];
-$arr3[] = 2;
-$arr3[] = 4;
-$arr3[] = 3;
-foreach ($arr3 as $item) {
-    echo $item;
-}
-?>
+   <form method="post">
+       <input type="text" name="email" placeholder="Email">
+       <br>
+       <input type="password" name="password" placeholder="Password"/>
+       <button>Login</button>
+   </form>
 </body>
 </html>
