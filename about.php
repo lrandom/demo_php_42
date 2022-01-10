@@ -1,9 +1,3 @@
-<?php
-if (isset($_REQUEST['email'])) {
-    $email = $_REQUEST['email'];
-    echo $email;
-}
-?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -14,11 +8,8 @@ if (isset($_REQUEST['email'])) {
     <title>Document</title>
 </head>
 <body>
-   <form method="post">
-       <input type="text" name="email" placeholder="Email">
-       <br>
-       <input type="password" name="password" placeholder="Password"/>
-       <button>Login</button>
-   </form>
+   <?php
+   include('./commons/sidebar.php');
+   ?>
 </body>
 </html>

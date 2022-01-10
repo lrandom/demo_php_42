@@ -8,9 +8,6 @@
     <title>Document</title>
 </head>
 <body>
-<?php require_once('./commons/nav.php') ?>
-<?php require_once('./commons/nav.php') ?>
-<div class="content">Home page Content</div>
-<?php require('./commons/footer.php') ?>
+   <?php include ('./../../commons/footer.php')?>
 </body>
 </html>
