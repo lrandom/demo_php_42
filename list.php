@@ -1,6 +1,21 @@
 <?php
 require_once('./get_connect.php');
 $conn = getConnect();
+
+if (isset($_GET['action_name'])) {
+    if ($_GET['action_name'] == 'DELETE') {
+        $userId = $_GET['id'];
+        if (is_numeric($userId)) {
+            $sql = "DELETE FROM users WHERE id = $userId";
+            $rs = mysqli_query($conn, $sql);
+        }
+    }
+
+    if ($_GET['action_name'] == 'UPDATE') {
+        header('Location: update.php?id=' . $_GET['id']);
+    }
+}
+
 mysqli_query($conn, "set names utf8");
 $rs = mysqli_query($conn, "SELECT *,users.name as user_name, users.id as user_id, provinces.name as province_name FROM users LEFT JOIN provinces ON users.province_id = provinces.id");
 
@@ -46,7 +61,8 @@ $rs = mysqli_query($conn, "SELECT *,users.name as user_name, users.id as user_id
             <td><?php echo $row['province_name']; ?></td>
             <td>
                 <a href="?id=<?php echo $row['user_id']; ?>&action_name=UPDATE">Sửa</a>
-                <a href="?id=<?php echo $row['user_id']; ?>&action_name=DELETE">Xóa</a>
+                <a onclick="return confirm('Bạn chắc chắn muốn xoá ?')"
+                   href="?id=<?php echo $row['user_id']; ?>&action_name=DELETE">Xóa</a>
             </td>
         </tr>
         <?php
