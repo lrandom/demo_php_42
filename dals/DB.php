@@ -27,7 +27,7 @@ class DB
         $this->db = new PDO("mysql:host=" . self::DB_HOST . ";dbname=" . self::DB_NAME,
             self::DB_USER,
             self::DB_PASSWORD);
-        PDO::setAttribute($this->db, PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->db->exec("set names utf8");
     }
 

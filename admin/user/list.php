@@ -1,3 +1,30 @@
+<?php
+$rootDir = str_replace("/admin/user", "", __DIR__);
+$rootDir .= "/dals/DalUser.php";
+require_once $rootDir; //auto loading Php - PSR 4 - Laravel sử dụng
+$dalUser = new DalUser();
+
+if (isset($_GET['action'])) {
+    $action = $_GET['action'];
+    $id = $_GET['id'];
+    if (is_numeric($id)) {
+        if ($action == 'DELETE') {
+            //tiến hành xoá
+            //nếu là admin thì ko cho xoá
+            $dalUser->delete($id);
+        } elseif ($action == 'EDIT') {
+            //tiến hành sửa
+            header("location: edit.php?id=$id");
+        }
+    }
+}
+
+$page = $_GET['page'] ?? 1; // isset($_GET['page']) ? $_GET['page'] : 1;
+$users = $dalUser->getList($page);
+$totalUsers = $dalUser->getTotalRows();
+$totalPages = ceil($totalUsers / DalUser::PAGE_SIZE);
+
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -6,57 +33,76 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>List User</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+    <?php
+    require './../commons/head.php';
+    ?>
 </head>
 <body>
-     <div class="container">
-         <ul class="nav">
-             <li class="nav-item">
-                 <a class="nav-link" href="#">User</a>
-             </li>
-             <li class="nav-item">
-                 <a class="nav-link disabled">Category</a>
-             </li>
-             <li class="nav-item">
-                 <a class="nav-link" href="#">Product</a>
-             </li>
-             <li class="nav-item">
-                 <a class="nav-link" href="#">Order</a>
-             </li>
-         </ul>
 
+<?php
+require './../commons/nav.php';
+?>
 
-         <table class="table">
-             <thead>
-             <tr>
-                 <th scope="col">#</th>
-                 <th scope="col">First</th>
-                 <th scope="col">Last</th>
-                 <th scope="col">Handle</th>
-             </tr>
-             </thead>
-             <tbody>
-             <tr>
-                 <th scope="row">1</th>
-                 <td>Mark</td>
-                 <td>Otto</td>
-                 <td>@mdo</td>
-             </tr>
-             <tr>
-                 <th scope="row">2</th>
-                 <td>Jacob</td>
-                 <td>Thornton</td>
-                 <td>@fat</td>
-             </tr>
-             <tr>
-                 <th scope="row">3</th>
-                 <td colspan="2">Larry the Bird</td>
-                 <td>@twitter</td>
-             </tr>
-             </tbody>
-         </table>
-     </div>
+<div class="container" style="min-height:100vh;margin-top:5rem">
+    <a role="button" class="btn btn-primary" href="add.php">Add</a>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Email</th>
+            <th scope="col">Name</th>
+            <th scope="col">Phone</th>
+            <th scope="col">Address</th>
+            <th scope="col">Role</th>
+            <th scope="col">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <?php
+        foreach ($users as $user) {
+            ?>
+            <tr>
+                <th scope="row"><?php echo $user->id; ?></th>
+                <td><?php echo $user->email; ?></td>
+                <td><?php echo $user->name; ?></td>
+                <td><?php echo $user->phone; ?></td>
+                <td><?php echo $user->address; ?></td>
+                <td>
+                    <?php if ($user->role == 1) {
+                        echo "<span class='badge bg-primary'>User</span>";
+                    } else {
+                        echo "<span class='badge bg-danger'>Admin</span>";
+                    } ?></td>
+                <td>
+                    <a href="?action=EDIT&id=<?php echo $user->id; ?>" class="btn btn-primary">Edit</a>
+                    <a onclick="return confirm('Are you sure you want to delete ?')"
+                       href="?action=DELETE&id=<?php echo $user->id; ?>" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+            <?php
+        }
+        ?>
+        </tbody>
+
+    </table>
+
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <?php
+            for ($i = 1; $i <= $totalPages; $i++) {
+                ?>
+                <li class="page-item <?php if($i==$page){echo 'active';} ?>"><a class="page-link" href="?page=<?php echo $i; ?>">
+                        <?php echo $i; ?></a></li>
+                <?php
+            }
+            ?>
+        </ul>
+    </nav>
+</div>
+
+<?php
+require './../commons/footer.php';
+?>
 </body>
 </html>

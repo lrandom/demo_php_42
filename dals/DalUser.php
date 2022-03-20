@@ -4,18 +4,19 @@ require_once 'IDal.php';
 
 class DalUser extends DB implements IDal
 {
+    const PAGE_SIZE = 10;
 
     public function __construct()
     {
         parent::__construct();
-        $this->$this->setTableName("users");
+        $this->setTableName("users");
     }
 
-    function getList($page = 1, $pageSize = 10)
+    function getList($page = 1, $pageSize = self::PAGE_SIZE)
     {
         // TODO: Implement getList() method.
         $offset = ($page - 1) * $pageSize;
-        $sql = "SELECT * FROM $this->getTableName limit $offset,$pageSize";
+        $sql = "SELECT * FROM $this->tableName ORDER BY id DESC LIMIT $offset,$pageSize";
         $stm = $this->db->query($sql);
         $result = [];
         while ($row = $stm->fetch(PDO::FETCH_OBJ)) {
@@ -27,7 +28,7 @@ class DalUser extends DB implements IDal
     function get($id)
     {
         // TODO: Implement get() method.
-        $sql = "SELECT * FROM $this->getTableName WHERE id = $id";
+        $sql = "SELECT * FROM $this->tableName WHERE id = $id";
         $stm = $this->db->query($sql);
         return $stm->fetch(PDO::FETCH_OBJ);//ko cần phải dùng vòng lặp
     }
@@ -63,16 +64,14 @@ class DalUser extends DB implements IDal
     {
         // TODO: Implement update() method.
         try {
-            $prepareStm = $this->db->prepare("UPDATE TABLE $this->tableName SET name = :name,
+            $prepareStm = $this->db->prepare("UPDATE $this->tableName SET name = :name,
                                                                                 email = :email,
-                                                                                password = :password,
                                                                                 phone = :phone,
                                                                                 address = :address,
                                                                                 role = :role
                                                                                 WHERE id = :id");
             $prepareStm->bindParam(':name', $data['name']);
             $prepareStm->bindParam(':email', $data['email']);
-            $prepareStm->bindParam(':password', $data['password']);
             $prepareStm->bindParam(':phone', $data['phone']);
             $prepareStm->bindParam(':address', $data['address']);
             $prepareStm->bindParam(':role', $data['role']);
@@ -80,6 +79,7 @@ class DalUser extends DB implements IDal
             $prepareStm->execute();
             return true;
         } catch (PDOException $exception) {
+            //echo $exception->getMessage();
             return false;
         }
     }
@@ -95,6 +95,14 @@ class DalUser extends DB implements IDal
         } catch (PDOException $exception) {
             return false;
         }
+    }
+
+    function getTotalRows()
+    {
+        $sql = "SELECT COUNT(*) as total_rows FROM $this->tableName";
+        $stm = $this->db->query($sql);
+        $row = $stm->fetch(PDO::FETCH_OBJ);
+        return $row->total_rows;//ko cần phải dùng vòng lặp
     }
 
 }
