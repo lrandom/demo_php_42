@@ -1,8 +1,8 @@
 <?php
-$rootDir = str_replace("/admin/user", "", __DIR__);
-$rootDir .= "/dals/DalUser.php";
+$rootDir = str_replace("/admin/category", "", __DIR__);
+$rootDir .= "/dals/DalCategory.php";
 require_once $rootDir; //auto loading Php - PSR 4 - Laravel sử dụng
-$dalUser = new DalUser();
+$dalCategory = new DalCategory();
 
 if (isset($_GET['action'])) {
     $action = $_GET['action'];
@@ -11,7 +11,7 @@ if (isset($_GET['action'])) {
         if ($action == 'DELETE') {
             //tiến hành xoá
             //nếu là admin thì ko cho xoá
-            $dalUser->delete($id);
+            $dalCategory->delete($id);
         } elseif ($action == 'EDIT') {
             //tiến hành sửa
             header("location: edit.php?id=$id");
@@ -20,8 +20,8 @@ if (isset($_GET['action'])) {
 }
 
 $page = $_GET['page'] ?? 1; // isset($_GET['page']) ? $_GET['page'] : 1;
-$users = $dalUser->getList($page);
-$totalUsers = $dalUser->getTotalRows();
+$categories = $dalCategory->getList($page);
+$totalUsers = $dalCategory->getTotalRows();
 $totalPages = ceil($totalUsers / DB::PAGE_SIZE);
 
 ?>
@@ -49,35 +49,22 @@ require './../commons/nav.php';
         <thead>
         <tr>
             <th scope="col">#</th>
-            <th scope="col">Email</th>
             <th scope="col">Name</th>
-            <th scope="col">Phone</th>
-            <th scope="col">Address</th>
-            <th scope="col">Role</th>
             <th scope="col">Action</th>
         </tr>
         </thead>
         <tbody>
 
         <?php
-        foreach ($users as $user) {
+        foreach ($categories as $category) {
             ?>
             <tr>
-                <th scope="row"><?php echo $user->id; ?></th>
-                <td><?php echo $user->email; ?></td>
-                <td><?php echo $user->name; ?></td>
-                <td><?php echo $user->phone; ?></td>
-                <td><?php echo $user->address; ?></td>
+                <th scope="row"><?php echo $category->id; ?></th>
+                <td><?php echo $category->name; ?></td>
                 <td>
-                    <?php if ($user->role == 1) {
-                        echo "<span class='badge bg-primary'>User</span>";
-                    } else {
-                        echo "<span class='badge bg-danger'>Admin</span>";
-                    } ?></td>
-                <td>
-                    <a href="?action=EDIT&id=<?php echo $user->id; ?>" class="btn btn-primary">Edit</a>
+                    <a href="?action=EDIT&id=<?php echo $category->id; ?>" class="btn btn-primary">Edit</a>
                     <a onclick="return confirm('Are you sure you want to delete ?')"
-                       href="?action=DELETE&id=<?php echo $user->id; ?>" class="btn btn-danger">Delete</a>
+                       href="?action=DELETE&id=<?php echo $category->id; ?>" class="btn btn-danger">Delete</a>
                 </td>
             </tr>
             <?php
@@ -92,7 +79,9 @@ require './../commons/nav.php';
             <?php
             for ($i = 1; $i <= $totalPages; $i++) {
                 ?>
-                <li class="page-item <?php if($i==$page){echo 'active';} ?>"><a class="page-link" href="?page=<?php echo $i; ?>">
+                <li class="page-item <?php if ($i == $page) {
+                    echo 'active';
+                } ?>"><a class="page-link" href="?page=<?php echo $i; ?>">
                         <?php echo $i; ?></a></li>
                 <?php
             }

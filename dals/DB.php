@@ -7,7 +7,7 @@ class DB
     const DB_USER = "root";
     const DB_PASSWORD = "koodinh@";
     const DB_NAME = "book_shop";
-
+    const PAGE_SIZE = 10;
 
     protected $db;
     protected $tableName = "";
@@ -39,6 +39,49 @@ class DB
     function _destruct()
     {
         $this->closeConnect();
+    }
+
+
+    function delete($id)
+    {
+        // TODO: Implement delete() method.
+        try {
+            $prepareStm = $this->db->prepare("DELETE FROM $this->tableName WHERE id = :id");
+            $prepareStm->bindParam(':id', $id);
+            $prepareStm->execute();
+            return true;
+        } catch (PDOException $exception) {
+            return false;
+        }
+    }
+
+    function getTotalRows()
+    {
+        $sql = "SELECT COUNT(*) as total_rows FROM $this->tableName";
+        $stm = $this->db->query($sql);
+        $row = $stm->fetch(PDO::FETCH_OBJ);
+        return $row->total_rows;//ko cần phải dùng vòng lặp
+    }
+
+    function getList($page = 1, $pageSize = self::PAGE_SIZE)
+    {
+        // TODO: Implement getList() method.
+        $offset = ($page - 1) * $pageSize;
+        $sql = "SELECT * FROM $this->tableName ORDER BY id DESC LIMIT $offset,$pageSize";
+        $stm = $this->db->query($sql);
+        $result = [];
+        while ($row = $stm->fetch(PDO::FETCH_OBJ)) {
+            $result[] = $row;
+        }
+        return $result;
+    }
+
+    function get($id)
+    {
+        // TODO: Implement get() method.
+        $sql = "SELECT * FROM $this->tableName WHERE id = $id";
+        $stm = $this->db->query($sql);
+        return $stm->fetch(PDO::FETCH_OBJ);//ko cần phải dùng vòng lặp
     }
 }
 
