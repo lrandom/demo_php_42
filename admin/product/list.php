@@ -9,15 +9,17 @@ if (isset($_GET['action'])) {
     $id = $_GET['id'];
     if (is_numeric($id)) {
         if ($action == 'DELETE') {
-            //tiến hành xoá
-            //nếu là admin thì ko cho xoá
-            $dalProduct->delete($id);
+            $obj = $dalProduct->get($id);
             //xoá ảnh
             try {
                 //xoá ảnh
+                unlink($rootDir . $obj->image);
             }catch (Exception $ex) {
                 echo $ex->getMessage();
             }
+            //tiến hành xoá
+            //nếu là admin thì ko cho xoá
+            $dalProduct->delete($id);
         } elseif ($action == 'EDIT') {
             //tiến hành sửa
             header("location: edit.php?id=$id");
@@ -58,6 +60,7 @@ require './../commons/nav.php';
             <th scope="col">Image</th>
             <th scope="col">Name</th>
             <th scope="col">Price</th>
+            <th scope="col">Category</th>
             <th scope="col">Action</th>
         </tr>
         </thead>
@@ -67,7 +70,7 @@ require './../commons/nav.php';
         foreach ($products as $product) {
             ?>
             <tr>
-                <th scope="row"><?php echo $product->id; ?></th>
+                <th scope="row"><?php echo $product->product_id; ?></th>
                 <td>
                     <img onclick="_openModal('<?php echo BASE_URL . $product->image; ?>')"
                          src="<?php echo BASE_URL . $product->image; ?>"
@@ -78,9 +81,14 @@ require './../commons/nav.php';
                 <td><?php echo $product->name; ?></td>
                 <td><?php echo $product->price; ?></td>
                 <td>
-                    <a href="?action=EDIT&id=<?php echo $product->id; ?>" class="btn btn-primary">Edit</a>
+                  <span class="badge bg-primary">
+                      <?php echo $product->category_name; ?>
+                  </span>
+                </td>
+                <td>
+                    <a href="?action=EDIT&id=<?php echo $product->product_id; ?>" class="btn btn-primary">Edit</a>
                     <a onclick="return confirm('Are you sure you want to delete ?')"
-                       href="?action=DELETE&id=<?php echo $product->id; ?>" class="btn btn-danger">Delete</a>
+                       href="?action=DELETE&id=<?php echo $product->product_id; ?>" class="btn btn-danger">Delete</a>
                 </td>
             </tr>
             <?php

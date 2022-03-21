@@ -63,6 +63,9 @@ class DB
         return $row->total_rows;//ko cần phải dùng vòng lặp
     }
 
+
+
+
     function getList($page = 1, $pageSize = self::PAGE_SIZE)
     {
         // TODO: Implement getList() method.

@@ -10,6 +10,33 @@ class DalProduct extends DB implements IDal
         $this->setTableName("products");
     }
 
+    function getList($page = 1, $pageSize = self::PAGE_SIZE)
+    {
+        // TODO: Implement getList() method.
+        $offset = ($page - 1) * $pageSize;
+        $sql = "SELECT *,products.id as product_id,categories.name as category_name FROM $this->tableName LEFT JOIN categories ON category_id = categories.id ORDER BY products.id  DESC LIMIT $offset,$pageSize";
+        $stm = $this->db->query($sql);
+        $result = [];
+        while ($row = $stm->fetch(PDO::FETCH_OBJ)) {
+            $result[] = $row;
+        }
+        return $result;
+    }
+
+    function getListOrderBySoldCounter($page = 1, $pageSize = self::PAGE_SIZE)
+    {
+        // TODO: Implement getList() method.
+        $offset = ($page - 1) * $pageSize;
+        $sql = "SELECT *,products.id as product_id,categories.name as category_name FROM $this->tableName LEFT JOIN categories ON category_id = categories.id ORDER BY products.sold_counter  DESC LIMIT $offset,$pageSize";
+        $stm = $this->db->query($sql);
+        $result = [];
+        while ($row = $stm->fetch(PDO::FETCH_OBJ)) {
+            $result[] = $row;
+        }
+        return $result;
+    }
+
+
     function add($data)
     {
         /*  [
@@ -43,13 +70,11 @@ class DalProduct extends DB implements IDal
         try {
             $prepareStm = $this->db->prepare("UPDATE $this->tableName SET name = :name,
                  price = :price,
-                 image = :image,
                  description = :description,
                  category_id = :category_id
                                                                             WHERE id = :id");
             $prepareStm->bindParam(':name', $data['name']);
             $prepareStm->bindParam(':price', $data['price']);
-            $prepareStm->bindParam(':image', $data['image']);
             $prepareStm->bindParam(':description', $data['description']);
             $prepareStm->bindParam(':category_id', $data['category_id']);
             $prepareStm->bindParam(':id', $id);
@@ -60,6 +85,21 @@ class DalProduct extends DB implements IDal
             return false;
         }
     }
+
+    function updateImagePath($imagePath, $id)
+    {
+        try {
+            $prepareStm = $this->db->prepare("UPDATE $this->tableName SET image = :image  WHERE id = :id");
+            $prepareStm->bindParam(':image', $imagePath);
+            $prepareStm->bindParam(':id', $id);
+            $prepareStm->execute();
+            return true;
+        } catch (PDOException $exception) {
+            //echo $exception->getMessage();
+            return false;
+        }
+    }
+
 
 }
 
